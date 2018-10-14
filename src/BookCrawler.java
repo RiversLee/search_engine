@@ -62,7 +62,7 @@ public class BookCrawler {
     public static Boolean exeInsertData(List<Book> books) throws ClassNotFoundException,SQLException{
         Class.forName("com.mysql.cj.jdbc.Driver");
         String url = "jdbc:mysql://localhost:3306/bookmessage?useUnicode=true&characterEncoding=utf8&useSSL=false";
-        Connection conn = DriverManager.getConnection(url,"root","lyj5232698");
+        Connection conn = DriverManager.getConnection(url,"root","12345678");
         String sql = "insert into book (bookID, bookName, bookPrice) values (?, ?, ?)";
         PreparedStatement exeUpdate = conn.prepareStatement(sql);
 
