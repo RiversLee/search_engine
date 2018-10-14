@@ -20,7 +20,7 @@ import java.util.List;
 
 
 public class BookCrawler {
-    //static final Logger logger = LoggerFactory.getLogger(BookCrawler.class);
+    static final Logger logger = LoggerFactory.getLogger(BookCrawler.class);
     public static void main(String[]args) throws IOException, SQLException,ClassNotFoundException {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         String url = "https://search.jd.com/Search?keyword=python&enc=utf-8&wq=python&pvid=5509b4aa6e6b475d91b35d7c0d83009a";
@@ -52,9 +52,9 @@ public class BookCrawler {
 
         }
         if(exeInsertData(books)){
-            System.out.println("Insert success");
+            logger.info("Insert success");
         }else{
-            System.out.println("Insert fail");
+            logger.info("Insert fail");
         }
         httpResponse.close();
 
