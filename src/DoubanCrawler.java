@@ -11,6 +11,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.List;
 public class DoubanCrawler {
     private static List<Movie> movies = new ArrayList<>();
     private static String url = "https://movie.douban.com/top250";
-    public static void main(String[]args) throws IOException {
+    public static void main(String[]args) throws IOException, SQLException, ClassNotFoundException {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(url);
         CloseableHttpResponse httpResponse = httpClient.execute(httpGet);
@@ -32,7 +33,7 @@ public class DoubanCrawler {
 
             for(Element element: elements){
                 String ranking = element.select("div[class=pic]").select("em").text();
-                String name = element.select("div[class=hd]").select("span").text();
+                String name = element.select("div[class=hd]").select("span").first().text();
 
                 Movie movie = new Movie();
                 movie.setMovieName(name);
@@ -43,16 +44,25 @@ public class DoubanCrawler {
             EntityUtils.consume(httpResponse.getEntity());
         }
         httpResponse.close();
-
+        //addMysql(movies);
         for(Movie movie: movies){
             System.out.println(movie.getMovieName() + " "+movie.getRanking() );
         }
     }
-    public boolean addMysql(List<Movie> movies) throws ClassNotFoundException, SQLException {
+    public static Boolean addMysql(List<Movie> movies) throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.cj.jdbc.Driver");
         String url = "jdbc:mysql://localhost:3306/moviemessage?useUnicode=true&" +
                                     "characterEncoding=utf8&useSSL=false";
         Connection conn = DriverManager.getConnection(url,"root","12345678");
+        String sql = "insert into movie (ranking,name) values(?,?)";
+
+        PreparedStatement  exeUpdate = conn.prepareStatement(sql);
+
+        for(Movie movie:movies){
+            exeUpdate.setString(1,movie.getRanking());
+            exeUpdate.setString(2,movie.getMovieName());
+            exeUpdate.executeUpdate();
+        }
         return true;
     }
 }
